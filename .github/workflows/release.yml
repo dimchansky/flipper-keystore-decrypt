@@ -1,0 +1,37 @@
+name: "Release"
+# Push a tag v* to build the app against the official release SDK and publish
+# the .fap as a GitHub release asset:
+#
+#   git tag v1.1 && git push origin v1.1
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    name: "Build and publish fap"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build with ufbt (official release SDK)
+        uses: flipperdevices/flipperzero-ufbt-action@v0.1
+        id: build-app
+        with:
+          sdk-channel: release
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "Keystore Decrypt ${GITHUB_REF_NAME}" \
+            --notes-file docs/changelog.md \
+            ${{ steps.build-app.outputs.fap-artifacts }}

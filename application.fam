@@ -1,0 +1,19 @@
+App(
+    appid="subghz_keystore_decrypt",
+    name="Keystore Decrypt",
+    apptype=FlipperAppType.EXTERNAL,
+    entry_point="subghz_keystore_decrypt_main",
+    requires=["gui", "dialogs"],
+    # Static estimate of the deepest path (text keystore: main -> decrypt ->
+    # subghz_keystore_load -> read_file -> process_line -> sscanf, where
+    # __ssvfiscanf_r alone takes 648 B) is about 1.7-2 KB, so 4 KB leaves ~2x
+    # headroom. The app logs "Stack free min" after every run to confirm this
+    # on a device. Keep APP_STACK_SIZE in the .c file in sync.
+    stack_size=4 * 1024,
+    fap_category="Sub-GHz",
+    fap_version="1.1",
+    fap_icon="keystore_decrypt_10px.png",
+    fap_author="Dimchansky",
+    fap_weburl="https://github.com/dimchansky/flipper-keystore-decrypt",
+    fap_description="Decrypt a SubGhz keystore file using the device enclave and write the plaintext next to it",
+)
